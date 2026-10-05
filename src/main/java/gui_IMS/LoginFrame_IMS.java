@@ -11,7 +11,7 @@ public class LoginFrame_IMS extends JFrame implements ActionListener {
     private JButton btnLogin;
 
     public LoginFrame_IMS() {
-        setTitle("IMS Login");
+        setTitle("Inventory Management System Login");
         setSize(350, 220);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null); 
