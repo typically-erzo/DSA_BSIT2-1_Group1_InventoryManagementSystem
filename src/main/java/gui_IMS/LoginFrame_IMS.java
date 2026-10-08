@@ -48,8 +48,8 @@ public class LoginFrame_IMS extends JFrame implements ActionListener {
             String pass = new String(txtPass.getPassword());
 
             if (user.equals("admin") && pass.equals("admin123")) {
-                //MainFrame_IMS mainFrame = new MainFrame_IMS();
-                //mainFrame.setVisible(true);
+                MainFrame_IMS mainFrame = new MainFrame_IMS();
+                mainFrame.setVisible(true);
                 dispose(); 
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Username or Password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
