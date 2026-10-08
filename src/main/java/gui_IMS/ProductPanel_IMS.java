@@ -18,10 +18,10 @@ public class ProductPanel_IMS extends JPanel implements ActionListener {
     public ProductPanel_IMS(InventoryManagement_IMS manager) {
         this.manager = manager;
 
-        setLayout(null);
+        setLayout(null); // Absolute positioning rule
         setSize(780, 450);
 
-        // LEFT SIDE: INPUT FORM
+        // --- LEFT SIDE: INPUT FORM ---
         lblId = new JLabel("ID:");
         lblId.setBounds(20, 20, 80, 25);
         add(lblId);
@@ -62,7 +62,7 @@ public class ProductPanel_IMS extends JPanel implements ActionListener {
         txtPrice.setBounds(100, 160, 150, 25);
         add(txtPrice);
 
-        // FORM CONTROL BUTTONS
+        // --- FORM CONTROL BUTTONS ---
         btnAdd = new JButton("Add");
         btnAdd.setBounds(20, 200, 100, 30);
         add(btnAdd);
@@ -79,7 +79,7 @@ public class ProductPanel_IMS extends JPanel implements ActionListener {
         btnClear.setBounds(130, 240, 100, 30);
         add(btnClear);
 
-        // RIGHT SIDE: SEARCH BAR & TABLE 
+        // --- RIGHT SIDE: SEARCH BAR & TABLE ---
         lblSearch = new JLabel("Search:");
         lblSearch.setBounds(280, 20, 60, 25);
         add(lblSearch);
@@ -96,7 +96,7 @@ public class ProductPanel_IMS extends JPanel implements ActionListener {
         btnReset.setBounds(625, 20, 90, 25);
         add(btnReset);
 
-        // TABLE SETUP
+        // --- TABLE SETUP ---
         String[] columns = {"ID", "Name", "Quantity", "Supplier", "Price"};
         tableModel = new DefaultTableModel(columns, 0);
 
@@ -116,11 +116,112 @@ public class ProductPanel_IMS extends JPanel implements ActionListener {
                 txtPrice.setText(tableModel.getValueAt(selectedRow, 4).toString());
             }
         });
+
+        // Register Action Listeners
+        btnAdd.addActionListener(this);
+        btnUpdate.addActionListener(this);
+        btnDelete.addActionListener(this);
+        btnClear.addActionListener(this);
+        btnSearch.addActionListener(this);
+        btnReset.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        if (e.getSource() == btnAdd) {
+            handleAdd();
+        } else if (e.getSource() == btnUpdate) {
+            handleUpdate();
+        } else if (e.getSource() == btnDelete) {
+            handleDelete();
+        } else if (e.getSource() == btnClear) {
+            clearFields();
+        } else if (e.getSource() == btnSearch) {
+            handleSearch();
+        } else if (e.getSource() == btnReset) {
+            clearFields();
+            JOptionPane.showMessageDialog(this, "Table filter reset.", "Show All", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void handleAdd() {
+        String id = txtId.getText().trim();
+        String name = txtName.getText().trim();
+        String qty = txtQty.getText().trim();
+        String supplier = txtSupplier.getText().trim();
+        String price = txtPrice.getText().trim();
+
+        if (id.isEmpty() || name.isEmpty() || qty.isEmpty() || supplier.isEmpty() || price.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all input fields.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+        } else {
+            tableModel.addRow(new Object[]{id, name, qty, supplier, price});
+            JOptionPane.showMessageDialog(this, "Product added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+        }
+    }
+
+    private void handleUpdate() {
+        int selectedRow = productTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a product row from the table to update.", "Selection Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+            tableModel.setValueAt(txtId.getText().trim(), selectedRow, 0);
+            tableModel.setValueAt(txtName.getText().trim(), selectedRow, 1);
+            tableModel.setValueAt(txtQty.getText().trim(), selectedRow, 2);
+            tableModel.setValueAt(txtSupplier.getText().trim(), selectedRow, 3);
+            tableModel.setValueAt(txtPrice.getText().trim(), selectedRow, 4);
+
+            JOptionPane.showMessageDialog(this, "Product updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+        }
+    }
+
+    private void handleDelete() {
+        int selectedRow = productTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a product row from the table to delete.", "Selection Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+            tableModel.removeRow(selectedRow);
+            JOptionPane.showMessageDialog(this, "Product deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+        }
+    }
+
+    private void handleSearch() {
+        String query = txtSearch.getText().trim().toLowerCase();
+
+        if (query.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter an ID or Name to search.", "Search Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+            boolean found = false;
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String id = tableModel.getValueAt(i, 0).toString().toLowerCase();
+                String name = tableModel.getValueAt(i, 1).toString().toLowerCase();
+
+                if (id.equals(query) || name.contains(query)) {
+                    productTable.setRowSelectionInterval(i, i);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                JOptionPane.showMessageDialog(this, "No matching product found in the table.", "Search Result", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
+    private void clearFields() {
+        txtId.setText("");
+        txtName.setText("");
+        txtQty.setText("");
+        txtSupplier.setText("");
+        txtPrice.setText("");
+        txtSearch.setText("");
+        productTable.clearSelection();
     }
 }
+
 
